@@ -6,6 +6,9 @@ import { getServerSession } from 'next-auth'
 import NavMenu from './components/NavMenu'
 import { SocketProvider } from './SocketProvider'
 import { authOptions } from './utils/auth'
+import Sidebar from './components/Sidebar'
+import ReduxProvider from '@/store/ReduxProvider'
+import { getChats } from './actions'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,16 +23,22 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const session = await getServerSession(authOptions)
+  const chats = await getChats();
 
   return (
       <html lang="en">
         <body className={inter.className}>
-          <SessionProvider session={session}>
-            <SocketProvider>
-              <NavMenu />
-              {children}
-            </SocketProvider>
-          </SessionProvider>
+          <ReduxProvider>
+            <SessionProvider session={session}>
+              <SocketProvider>
+                <NavMenu />
+                <main className="flex flex-row mt-[50px] h-[calc(100vh-80px)]">
+                    <Sidebar chats={chats} />
+                    {children}
+                </main>
+              </SocketProvider>
+            </SessionProvider>
+          </ReduxProvider>
         </body>
       </html>
 

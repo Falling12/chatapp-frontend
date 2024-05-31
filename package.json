@@ -9,10 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.0.1",
+    "@types/simple-peer": "^9.11.8",
+    "framer-motion": "^10.16.16",
     "next": "14.0.4",
     "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
+    "react-redux": "^9.0.4",
+    "simple-peer": "^9.11.1",
     "socket.io-client": "^4.7.2"
   },
   "devDependencies": {

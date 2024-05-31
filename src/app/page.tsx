@@ -1,15 +1,18 @@
 import { Suspense } from "react";
-import Friends from "@/app/components/Friends";
-import SocketRoom from "./components/SocketRoom";
+import getPossibleFriends from "./libs/getPossibleFriends";
+import User from "./components/User";
 
-export default function Home() {
+export default async function Home() {
+  const possibleFriends = await getPossibleFriends();
+
   return (
-    <div>
+    <div className="flex flex-col gap-3 w-full p-2 border h-[calc(100vh-100px)] border-gray-700 rounded-xl mx-4 my-7">
+      <h1 className="text-2xl text-center">Possible Friends</h1>
       <Suspense fallback={<div>Loading...</div>}>
-        <Friends />
+          {possibleFriends.map((friend: User) => (
+            <User friend={friend} key={friend.id}/>
+          ))}
       </Suspense>
-
-      <SocketRoom />
     </div>
   )
 }
