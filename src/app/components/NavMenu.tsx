@@ -86,7 +86,7 @@ export default function NavMenu({}) {
                                     notifications.map((notification: any, index: number) => (
                                     <div key={index} className="flex items-center gap-2 p-2 bg-gray-700 rounded-xl">
                                             <div className="flex items-center gap-2">
-                                                <Image src={`http://192.168.1.231:8000${notification.sender.imageUrl}`} width={'40'} height={'40'} alt="pfp" className="w-10 h-10 rounded-full" />
+                                                <Image src={`http://192.168.1.244:8000${notification.sender.imageUrl}`} width={'40'} height={'40'} alt="pfp" className="w-10 h-10 rounded-full" />
                                                 <div className="flex flex-col gap-1">
                                                 <h1 className="text-lg">{notification.sender.name}</h1>
                                                 <p className="text-gray-400">{notification.sender.email}</p>

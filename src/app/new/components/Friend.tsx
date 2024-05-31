@@ -16,7 +16,7 @@ export default function Friend(friend: User) {
     return (
         <div className='flex w-full items-center bg-gray-900 rounded-xl p-3 gap-3 justify-between'>
             <div className='flex items-center gap-3'>
-                <Image src={`http://192.168.1.231:8000${friend.imageUrl}`} width={'40'} height={'40'} alt='pfp' className="w-10 h-10 rounded-full" />
+                <Image src={`http://192.168.1.244:8000${friend.imageUrl}`} width={'40'} height={'40'} alt='pfp' className="w-10 h-10 rounded-full" />
 
                 <div className="flex flex-col gap-1">
                     <h1 className="text-xl">{friend.name}</h1>

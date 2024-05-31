@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useSocket } from '../../../SocketProvider'
 import Message from './Message'
 import { getChatMessages } from '@/app/libs/getChatMessages'
@@ -20,10 +20,15 @@ export default function ChatWindow({ id }: { id: string }) {
     const [joined, setJoined] = useState(false); // Added state to check if the user has joined the room
     const { data: session } = useSession();
     const router = useRouter();
+    const [isTyping, setIsTyping] = useState(false);
+    const [typingData, setTypingData] = useState({ typing: false, user: '' });
     const dispatch = useAppDispatch();
 
+    // Create a ref for the messages container
+    const msgContRef = useRef<HTMLDivElement>(null);
+
     const fetchMoreMessages = async () => {
-        setLoading(true);
+        setLoading(true)
     
         // Check if messages array is not empty before accessing the first element
         if (messages.length > 0) {
@@ -34,10 +39,10 @@ export default function ChatWindow({ id }: { id: string }) {
     
         setLoading(false);
     };
-    
+
     const scrollToBottom = () => {
-        const msgCont = document.querySelector('#msg-cont');
-    
+        const msgCont = msgContRef.current;
+
         if (msgCont) {
             // Delay the scrollTo to ensure the element is rendered and has a valid scrollHeight
             setTimeout(() => {
@@ -50,31 +55,30 @@ export default function ChatWindow({ id }: { id: string }) {
     }
 
     useEffect(() => {
-        const msgCont = document.querySelector('#msg-cont');
-
         const handleScroll = () => {
-            if (msgCont && msgCont.scrollTop === 0 && !loading) {
+            // Add a threshold of 50px before reaching the top
+            if (msgContRef.current && msgContRef.current.scrollTop < 50 && !loading) {
                 fetchMoreMessages();
             }
-
+        
             // Show the scrollToBottom button if the user is more than 100px from the bottom
-            if (msgCont && msgCont.scrollHeight - msgCont.scrollTop - msgCont.clientHeight > 100) {
+            if (msgContRef.current && msgContRef.current.scrollHeight - msgContRef.current.scrollTop - msgContRef.current.clientHeight > 100) {
                 setShowScrollToBottom(true);
             } else {
                 setShowScrollToBottom(false);
             }
         };
 
-        msgCont?.addEventListener('scroll', handleScroll);
+        msgContRef.current?.addEventListener('scroll', handleScroll);
 
         if (messages.length === 0) {
             getChatMessages(id, '', session?.user.token as string, 20).then((msgs) => {
-                setMessages(msgs.reverse());
+                setMessages(msgs);
             });
         }
 
         if (socket) {
-            if(!joined) {
+            if (!joined) {
                 socket.emit('join-room', id);
                 setJoined(true);
             }
@@ -86,14 +90,20 @@ export default function ChatWindow({ id }: { id: string }) {
             };
 
             socket.on('message', handleMessage);
-            
+
             socket.on('call', (offer: any) => {
                 dispatch(setIncomingCall(offer.offer))
                 router.push(`/chat/${id}/call`);
             });
 
+            socket.on('typing', (data) => {
+                console.log('typing', data);
+
+                setTypingData(data);
+            })
+
             return () => {
-                msgCont?.removeEventListener('scroll', handleScroll);
+                msgContRef.current?.removeEventListener('scroll', handleScroll);
                 socket.off('message', handleMessage);
             };
         }
@@ -117,7 +127,7 @@ export default function ChatWindow({ id }: { id: string }) {
             message: message,
             room: id
         })
-        
+
         clearCachesByServerAction('chats')
 
         setMessage('')
@@ -125,9 +135,31 @@ export default function ChatWindow({ id }: { id: string }) {
         scrollToBottom();
     }
 
+    const handleMessageTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMessage(e.target.value);
+        if (e.target.value !== '' && !isTyping) {
+            setIsTyping(true);
+            socket?.emit('typing', { room: id, typing: true, user: session?.user.id });
+        } else if (e.target.value === '' && isTyping) {
+            setIsTyping(false);
+            socket?.emit('typing', { room: id, typing: false, user: session?.user.id });
+        }
+    }
+
+    useEffect(() => {
+        if (isTyping) {
+            const typingTimeout = setTimeout(() => {
+                setIsTyping(false);
+                socket?.emit('typing', { room: id, typing: false, user: session?.user.id });
+            }, 2000);
+
+            return () => clearTimeout(typingTimeout);
+        }
+    }, [isTyping, socket, id, session]);
+
     return (
         <div className='flex flex-col gap-3 h-full w-full p-2 relative border border-gray-700 rounded-xl'>
-            <div className={styles.msg_cont} id="msg-cont">
+            <div className={styles.msg_cont} id="msg-cont" ref={msgContRef}>
                 {
                     messages.map((message, index) => (
                         <Message key={index} text={message.text} date={message.createdAt} sender={message.user} sended={
@@ -140,6 +172,12 @@ export default function ChatWindow({ id }: { id: string }) {
 
             <div className='flex flex-col w-full items-center gap-3'>
                 {
+                    typingData.typing && (
+                        <p>{typingData.user.name} is typing...</p>
+                    )
+                }
+
+                {
                     showScrollToBottom && (
                         <div className='bg-black p-2 w-10 h-10 rounded-full flex items-center justify-center rotate-180 cursor-pointer' onClick={() => scrollToBottom()}>
                             &#8679;
@@ -147,9 +185,13 @@ export default function ChatWindow({ id }: { id: string }) {
                     )
                 }
                 <div className='flex items-center gap-3 w-full'>
-                    <input type="text" className='flex-1 p-2 rounded-xl focus:outline-none bg-black text-white' value={message} onChange={(e) => {
-                        setMessage(e.target.value)
-                    }} />
+                    <input type="text" className='flex-1 p-2 rounded-xl focus:outline-none bg-black text-white' value={message} onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            if (message !== '') {
+                                sendMessage();
+                            }
+                        }
+                    }} onChange={(e) => handleMessageTyping(e)} />
 
                     <button className='bg-black text-white px-4 py-2 rounded-xl' onClick={() => sendMessage()}>Send</button>
                 </div>

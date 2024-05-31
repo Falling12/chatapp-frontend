@@ -7,7 +7,7 @@ import { authOptions } from "./utils/auth";
 export async function getChats() {
     const session = await getServerSession(authOptions);
 
-    const res = await fetch('http://192.168.1.231:8000/api/chats/', {
+    const res = await fetch('http://192.168.1.244:8000/api/chats/', {
         headers: {
             'authorization': session?.user.token as string,
             'Content-Type': 'application/json'
@@ -29,7 +29,7 @@ export async function getChats() {
 
 export async function getUserNotifications() {
     const session = await getServerSession(authOptions);
-    const res = await fetch('http://192.168.1.231:8000/api/user/friend-requests', {
+    const res = await fetch('http://192.168.1.244:8000/api/user/friend-requests', {
         headers: {
             'Content-Type': 'application/json',
             'authorization': session?.user.token as string
@@ -42,7 +42,7 @@ export async function getUserNotifications() {
 }
 
 export async function deleteChat(id: string, token: string) {
-    const res = await fetch(`http://192.168.1.231:8000/api/chats/${id}`, {
+    const res = await fetch(`http://192.168.1.244:8000/api/chats/${id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export async function deleteChat(id: string, token: string) {
 }
 
 export async function newChat(userIds: string[], token: string) {
-    const res = await fetch(`http://192.168.1.231:8000/api/chats`, {
+    const res = await fetch(`http://192.168.1.244:8000/api/chats`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

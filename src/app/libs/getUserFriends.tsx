@@ -4,7 +4,7 @@ import { authOptions } from "../utils/auth";
 export default async function getUserFriends() {
     const session = await getServerSession(authOptions);
 
-    const res = await fetch('http://192.168.1.231:8000/api/user/friends', {
+    const res = await fetch('http://192.168.1.244:8000/api/user/friends', {
         headers: {
             'authorization': session?.user.token as string,
             'Content-Type': 'application/json'

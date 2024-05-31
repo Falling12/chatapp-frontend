@@ -19,7 +19,7 @@ export default function Message({
     const variants = {
         hidden: {
             opacity: 0,
-            y: 50
+            y: 20 // Adjusted from 50 to 20
         },
         visible: {
             opacity: 1,
@@ -31,6 +31,7 @@ export default function Message({
     }
     return (
         <motion.div
+            key={date}
             variants={variants}
             initial='hidden'
             animate='visible'
@@ -40,7 +41,7 @@ export default function Message({
                 <div className='flex items-center gap-2' style={{
                     flexDirection: sended ? 'row-reverse' : 'row'
                 }}>
-                    <Image src={`http://192.168.1.231:8000${sender.imageUrl}`} width={'28'} height={'28'} alt="" className='w-7 h-7 rounded-full' />
+                    <Image src={`http://192.168.1.244:8000${sender.imageUrl}`} width={'28'} height={'28'} alt="" className='w-7 h-7 rounded-full' />
 
                     <div className='flex items-center bg-black/50 rounded-xl p-2 max-w-[200px]'>
                         <p className='text-white break-all'>{text}</p>
