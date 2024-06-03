@@ -27,6 +27,11 @@ export default function Chat({ name, id, image, lastMessage, isOnline, users }: 
     }
 
     useEffect(() => {
+        // Check if one user is online from the list of users
+        const online = users.some(user => user.online === true)
+
+        setOnline(online)
+
         if(params.id === id) {
             setActive(true)
         }
@@ -37,8 +42,9 @@ export default function Chat({ name, id, image, lastMessage, isOnline, users }: 
     }, [params.id])
 
     useEffect(() => {
-        socket?.on('friend-status', (data: { id: string, online: boolean }) => {
-            if(users.some(user => user.id === data.id)) {
+        socket?.on('friend-status', (data: { id: string, name: string, online: boolean }) => {
+            console.log(data)
+            if (users.some(user => user.id === data.id)) {
                 setOnline(data.online)
             }
         })
@@ -55,7 +61,7 @@ export default function Chat({ name, id, image, lastMessage, isOnline, users }: 
             <Link href={`/chat/${id}`} className='w-full'>
                 <div className='flex items-center gap-3'>
                     <div className='relative w-10 h-10 rounded-full'>
-                        <Image src={`http://192.168.1.244:8000${image}`} width={'40'} height={'40'} alt={name} className='w-10 h-10 rounded-full' />
+                        <Image src={`http://192.168.1.231:8000${image}`} width={'40'} height={'40'} alt={name} className='w-10 h-10 rounded-full' />
 
                         {
                             online && (

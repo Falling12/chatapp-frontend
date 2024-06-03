@@ -15,7 +15,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         // Connect to your socket server
-        const newSocket = io('http://192.168.1.244:8000', {
+        const newSocket = io('http://192.168.1.231:8000', {
             extraHeaders: {
                 authorization: session?.user?.token as string,
             }

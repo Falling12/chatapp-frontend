@@ -19,7 +19,7 @@ export const authOptions = {
 
                 console.log(credentials)
 
-                const res = await fetch("http://192.168.1.244:8000/api/auth/login", {
+                const res = await fetch("http://192.168.1.231:8000/api/auth/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

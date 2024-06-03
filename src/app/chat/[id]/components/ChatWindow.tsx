@@ -173,7 +173,7 @@ export default function ChatWindow({ id }: { id: string }) {
             <div className='flex flex-col w-full items-center gap-3'>
                 {
                     typingData.typing && (
-                        <p>{typingData.user.name} is typing...</p>
+                        <p className='self-start'>{typingData.user.name} is typing...</p>
                     )
                 }
 
