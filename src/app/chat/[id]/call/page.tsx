@@ -73,13 +73,9 @@ const Room = () => {
 
     return (
         <div className='flex items-center gap-2 p-3 w-full'>
-            <div className='w-full h-full relative'>
-                <video autoPlay muted ref={peerVideoRef} className='w-full h-full' />
+            <video autoPlay muted ref={peerVideoRef} className='w-1/2 h-full' />
 
-                <div className='absolute bottom-2 right-2 w-[300px] h-[200px] rounded-2xl overflow-hidden z-10'>
-                    <video autoPlay muted ref={userVideoRef} className='' />
-                </div>
-            </div>
+            <video autoPlay muted ref={userVideoRef} className='w-1/2 h-full' />
         </div>
     );
 };

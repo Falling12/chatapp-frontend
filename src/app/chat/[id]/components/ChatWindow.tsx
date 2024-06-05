@@ -54,6 +54,13 @@ export default function ChatWindow({ id }: { id: string }) {
         }
     }
 
+    const markMessagesAsRead = () => {
+        const unreadMessages = messages.filter(msg => !msg.hasRead && msg.user.id !== session?.user.id).map(msg => msg.id);
+        if (unreadMessages.length > 0) {
+            socket?.emit('markAsRead', { messages: unreadMessages, room: id });
+        }
+    }
+
     useEffect(() => {
         const handleScroll = () => {
             // Add a threshold of 50px before reaching the top
@@ -67,6 +74,8 @@ export default function ChatWindow({ id }: { id: string }) {
             } else {
                 setShowScrollToBottom(false);
             }
+            
+            markMessagesAsRead();
         };
 
         msgContRef.current?.addEventListener('scroll', handleScroll);
@@ -74,6 +83,7 @@ export default function ChatWindow({ id }: { id: string }) {
         if (messages.length === 0) {
             getChatMessages(id, '', session?.user.token as string, 20).then((msgs) => {
                 setMessages(msgs);
+                markMessagesAsRead();
             });
         }
 
@@ -87,6 +97,7 @@ export default function ChatWindow({ id }: { id: string }) {
                 setMessages((msgs) => [...msgs, message]);
 
                 scrollToBottom();
+                markMessagesAsRead();
             };
 
             socket.on('message', handleMessage);
@@ -102,9 +113,18 @@ export default function ChatWindow({ id }: { id: string }) {
                 setTypingData(data);
             })
 
+            socket.on('markAsRead', (readMessages) => {
+                setMessages((msgs) =>
+                    msgs.map((msg) =>
+                        readMessages.some((readMsg: Message) => readMsg.id === msg.id) ? { ...msg, hasRead: true } : msg
+                    )
+                );
+            });
+
             return () => {
                 msgContRef.current?.removeEventListener('scroll', handleScroll);
                 socket.off('message', handleMessage);
+                socket.off('markAsRead');
             };
         }
 
@@ -162,9 +182,16 @@ export default function ChatWindow({ id }: { id: string }) {
             <div className={styles.msg_cont} id="msg-cont" ref={msgContRef}>
                 {
                     messages.map((message, index) => (
-                        <Message key={index} text={message.text} date={message.createdAt} sender={message.user} sended={
-                            message.user.id === session?.user.id
-                        } />
+                        <Message 
+                            key={index} 
+                            text={message.text} 
+                            date={message.createdAt} 
+                            sender={message.user} 
+                            sended={
+                                message.user.id === session?.user.id
+                            } 
+                            hasRead={message.hasRead}
+                        />
                     ))
                 }
                 {loading && <p>Loading...</p>}

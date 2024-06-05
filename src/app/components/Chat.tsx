@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import DeleteButton from './DeleteButton';
 import Image from 'next/image';
 import CallButton from './CallButton';
+import { useSession } from 'next-auth/react';
 
 interface ChatProps {
     name: string;
@@ -21,14 +22,15 @@ export default function Chat({ name, id, image, lastMessage, isOnline, users }: 
     const [active, setActive] = React.useState(false)
     const params = useParams<{ id: string }>()
     const [online, setOnline] = React.useState(isOnline)
+    const { data: session } = useSession();
 
     const joinRoom = () => {
         socket?.emit('join-room', id)
     }
 
     useEffect(() => {
-        // Check if one user is online from the list of users
-        const online = users.some(user => user.online === true)
+        // Check if one user is online from the list of users except the current user
+        const online = users.some(user => user.id !== session?.user.id && user.online)
 
         setOnline(online)
 

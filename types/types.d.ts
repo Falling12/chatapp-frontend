@@ -4,6 +4,7 @@ interface Message {
     createdAt: string;
     updatedAt: string;
     user: User;
+    hasRead: boolean;
 }
 
 interface User {
