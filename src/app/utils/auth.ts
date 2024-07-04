@@ -16,9 +16,6 @@ export const authOptions = {
             },
             async authorize(credentials, req) {
                 // Add logic here to look up the user from the credentials supplied
-
-                console.log(credentials)
-
                 const res = await fetch("http://192.168.1.231:8000/api/auth/login", {
                     method: "POST",
                     headers: {
@@ -30,9 +27,6 @@ export const authOptions = {
                     }),
                 });
                 const user = await res.json();
-
-                console.log(user)
-
                 if (user) {
                     // Any object returned will be saved in `user` property of the JWT
                     return user.user;

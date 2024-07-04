@@ -6,7 +6,7 @@ import { getChatMessages } from '@/app/libs/getChatMessages'
 import { useSession } from 'next-auth/react'
 import styles from './ChatWindow.module.css'
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { clearCachesByServerAction, getChats } from '@/app/actions'
+import { clearCachesByServerAction, clearPathCache, getChats } from '@/app/actions'
 import { useRouter } from 'next/navigation'
 import { useAppDispatch } from '@/store/store'
 import { setIncomingCall } from '@/store/reducers/appSlice'
@@ -108,8 +108,6 @@ export default function ChatWindow({ id }: { id: string }) {
             });
 
             socket.on('typing', (data) => {
-                console.log('typing', data);
-
                 setTypingData(data);
             })
 
@@ -148,7 +146,7 @@ export default function ChatWindow({ id }: { id: string }) {
             room: id
         })
 
-        clearCachesByServerAction('chats')
+        clearPathCache('/')
 
         setMessage('')
 

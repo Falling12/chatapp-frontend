@@ -6,6 +6,7 @@ import { useSocket } from "../SocketProvider";
 import { getUserNotifications } from "../actions";
 import Image from "next/image";
 import HamburgerMenu from "./HamburgerMenu";
+import NavOption from "./NavOption";
 
 function AuthButton() {
     const { data: session } = useSession();
@@ -28,6 +29,7 @@ export default function NavMenu({}) {
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]) as any[]
     const socket =  useSocket()
+    const { data: session } = useSession();
 
     useEffect(() => {
         const getNotifications = async () => {
@@ -59,15 +61,23 @@ export default function NavMenu({}) {
     }
 
     return (
-        <header className="w-full bg-gray-900 items-center gap-2 p-4 flex justify-between fixed top-0 border-b border-b-gray-700 z-10">
+        <header className="w-full bg-[#111827] items-center gap-2 p-4 flex justify-between fixed top-0  z-10">
             <div className="flex items-center gap-2">
                 <HamburgerMenu />
                 <Link href="/">
-                    Home
+                    👋 Welcome, {session?.user.name}!
                 </Link>
             </div>
 
-            <div className="flex gap-3 items-center">
+            <div className="flex items-center bg-[#1F2937] rounded-2xl px-4 py-2 gap-1">
+                <input type="text" placeholder="Search..." className="bg-transparent text-white focus:outline-none" />
+
+                <div className="bg-[#111827] rounded-lg p-1 cursor-pointer text-[12px] font-bold text-white/70">
+                    CTRL+Q
+                </div>
+            </div>
+
+            {/* <div className="flex gap-3 items-center">
                 <svg className="cursor-pointer" onClick={() => setShowNotifications(!showNotifications)} fill="white" height="24" id="Layer_1" version="1.1" viewBox="0 0 512 512" width="24" xmlns="http://www.w3.org/2000/svg">
                     <g>
                         <path d="M381.7,225.9c0-97.6-52.5-130.8-101.6-138.2c0-0.5,0.1-1,0.1-1.6c0-12.3-10.9-22.1-24.2-22.1c-13.3,0-23.8,9.8-23.8,22.1   c0,0.6,0,1.1,0.1,1.6c-49.2,7.5-102,40.8-102,138.4c0,113.8-28.3,126-66.3,158h384C410.2,352,381.7,339.7,381.7,225.9z" />
@@ -110,6 +120,17 @@ export default function NavMenu({}) {
                 <div className="flex gap-2">
                     <AuthButton />
                 </div>
+            </div> */}
+
+            <div className="flex items-center gap-2">
+                <NavOption 
+                    icon={<svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.4998 20.269V15.034H14.611V20.269C14.611 20.8448 15.0735 21.316 15.6387 21.316H18.7221C19.2873 21.316 19.7498 20.8448 19.7498 20.269V12.94H21.4971C21.9698 12.94 22.196 12.3432 21.8362 12.0291L13.244 4.14516C12.8535 3.78918 12.2573 3.78918 11.8668 4.14516L3.27457 12.0291C2.92512 12.3432 3.14095 12.94 3.61373 12.94H5.36095V20.269C5.36095 20.8448 5.82345 21.316 6.38873 21.316H9.47207C10.0373 21.316 10.4998 20.8448 10.4998 20.269Z" fill="white"/></svg>}
+                    title={'Home'}
+                    url={'/'}
+                    active={true}
+                />
+
+                <AuthButton />
             </div>
         </header>
     )

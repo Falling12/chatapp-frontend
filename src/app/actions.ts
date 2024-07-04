@@ -17,6 +17,8 @@ export async function getChats() {
         }
     })
 
+    console.log(res, new Date())
+
     // handle unauthorized
     if (res.status === 401) {
         return []
@@ -76,9 +78,17 @@ export const clearCachesByServerAction = async (path: string) => {
             revalidateTag(path) 
         }
         else {
-            revalidatePath("/")
+            revalidatePath("/", "layout")
         }
     } catch (error) {
         console.error("clearCachesByServerAction => ", error)
+    }
+}
+
+export const clearPathCache = async (path: string) => {
+    try {
+        revalidatePath(path, "layout")
+    } catch (error) {
+        console.error("clearPathCache => ", error)
     }
 }
